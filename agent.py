@@ -28,7 +28,17 @@ def execute(action, inputs):
 
 def run_agent(task):
     prompt = f"""
-You are an AI agent using ReAct.
+You are a STRICT ReAct agent.
+
+RULES:
+1. ALWAYS use available tools when possible.
+2. NEVER use run_command unless absolutely necessary.
+3. NEVER say you cannot do something if a tool exists.
+4. If task is completed, immediately use:
+   Action: finish
+5. DO NOT explain limitations.
+6. DO NOT overthink.
+7. If task is simple, complete in ONE step and finish.
 
 Available actions:
 - open_youtube
@@ -42,9 +52,9 @@ Format STRICTLY:
 Thought: ...
 Action: ...
 Action Input: {{}}
-"""
 
-    prompt += f"\nTask: {task}\n"
+Task: {task}
+"""
 
     for step in range(MAX_STEPS):
         print(f"\n--- Step {step+1} ---")
@@ -55,23 +65,32 @@ Action Input: {{}}
         action, inputs = parse_response(response)
 
         if not action:
-            print("Failed to parse action. Stopping.")
+            print("❌ Failed to parse action. Stopping.")
             break
 
         if action == "finish":
-            print("Task completed.")
+            print("✅ Task completed.")
             break
 
-        # 🔒 Confirmation layer
+        # 🔒 Confirmation step
         if CONFIRM_EXECUTION:
             confirm = input(f"Execute {action} with {inputs}? (y/n): ")
             if confirm.lower() != "y":
-                print("Skipped.")
+                print("⛔ Skipped.")
                 break
 
         result = execute(action, inputs)
 
         print("Result:", result)
+
+        # 🔥 Auto-stop on success
+        if any(x in result for x in [
+            "Opened YouTube",
+            "Searched Google",
+            "File"
+        ]):
+            print("✅ Auto-detected success. Finishing.")
+            break
 
         prompt += f"\nObservation: {result}\n"
 

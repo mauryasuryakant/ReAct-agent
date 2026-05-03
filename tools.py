@@ -15,12 +15,6 @@ def create_file(filename, content):
         f.write(content)
     return f"File '{filename}' created"
 
-# ⚠️ restrict commands
-ALLOWED_COMMANDS = ["dir", "echo"]
-
+# 🚫 Restricted command execution
 def run_command(cmd):
-    if not any(cmd.startswith(c) for c in ALLOWED_COMMANDS):
-        return "Command not allowed"
-
-    result = subprocess.getoutput(cmd)
-    return result
+    return "run_command is restricted. Use other tools."
