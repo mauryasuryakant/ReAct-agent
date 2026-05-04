@@ -82,9 +82,6 @@ def execute(action, inputs):
 
 
 def run_agent(task):
-    # phi4-mini - If the task is completed, DO NOT take another action.
-    # gemma4:e2b - You have tools that can perform actions. You MUST use them when appropriate. Do not simulate inability.
-    # gemma4:e2b - If the URL is well-known (e.g., github.com, youtube.com), directly use open_url without searching.
     prompt = f"""
 You are a STRICT ReAct agent.
 You have tools that can perform actions. You MUST use them when appropriate. Do not simulate inability.
@@ -171,7 +168,3 @@ Task: {task}
 if __name__ == "__main__":
     user_task = input("Enter your task: ")
     run_agent(user_task)
-
-    # extra prompts
-    # DO NOT open YouTube separately before searching.
-    # Prefer the most direct tool that completes the task in one step.
